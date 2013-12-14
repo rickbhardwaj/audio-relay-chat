@@ -1,13 +1,5 @@
 from Tkinter import *
 
-f2 = open('sendBuffer.txt', 'r')
-lastMessage = f2.read()
-def pollFile(filePath):
-    if f2.read() != lastMessage:
-        lastMessage = f2.read()
-        return True
-    return False
-
 class takeInput(object):
 
     def __init__(self,requestMessage,parent, text):
@@ -42,21 +34,55 @@ class takeInput(object):
     def getString(self):
         return self.string
 
-top = Tk()
-text = Text(top)
+#global lastMessage
 
+def pollFile(filePath, lastMessage):
+    f2 = open('sendBuffer.txt', 'r')
+    readFirst = f2.read()
+    #print "Polling File..."
+    #print "Last message " + lastMessage
+    #print "F2 " + readFirst
+    if readFirst != lastMessage:
+        lastMessage = readFirst
+        f2.close()
+        print True
+        print "======================================="
+        return True
 
+    else:
+        print False
+        print "======================================="
+        return False
+
+def continuePolling(filePath, lastMessage):
+    print "Eliminate method calls"
+    while(True):
+        
+        #print "CONTINUE POLLING Last Message" + lastMessage
+        if pollFile(filePath, lastMessage):
+            reader = open('sendBuffer.txt', 'r')
+            lastMessage = reader.read()
+        top.after(2000, top.update())
 
 def getText(requestMessage,parent, t):
     global a
     a = takeInput(requestMessage,parent, t)
     return a.getString()
 
-
+top = Tk()
+text = Text(top)
+f2 = open('sendBuffer.txt', 'r')
+lastMessage = f2.read()
+f2.close()
+top.after(2000, continuePolling, 'sendBuffer.txt', lastMessage) 
 girl = getText('Message:', top, text)
-print(girl + " has logged in")
+#print(girl + " has logged in") 
 #text.insert(INSERT, girl)
 #text.insert(INSERT, "JELLO")
 text.pack()
 
+
+#print "TOP MESSAGE " + lastMessage
+
 top.mainloop()
+#print(pollFile('sendBuffer.txt', lastMessage))

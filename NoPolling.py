@@ -1,18 +1,23 @@
 from Tkinter import *
 import Tkinter as tki
+import ttk
 
 class takeInput(object):
 
     def __init__(self,requestMessage,parent, text):
 
+        s = ttk.Style()
+        s.theme_use('clam')
+
         self.string = ''
-        self.frame = Frame(parent)
+        self.frame = ttk.Frame(parent)
         self.frame.pack()        
         self.acceptInput(requestMessage)
         self.textFrame = text
         self.username = "Mr. Not Set"
 
-        button0 = Button(self.frame, text='Set user', command=self.msg_box)
+        button0 = ttk.Button(self.frame, text='Set user', command=self.msg_box)
+        
         button0.pack()
         
 
@@ -70,7 +75,7 @@ class takeInput(object):
         if data:
             self.username = data
             logger = open('sendBuffer.txt', 'a')
-            logger.write(self.username + "has logged in")
+            logger.write(self.username + "has logged in\n")
             self.top.destroy()
 
 

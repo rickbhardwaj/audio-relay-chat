@@ -1,6 +1,8 @@
 from Tkinter import *
 import Tkinter as tki
 import ttk
+import random
+import hashlib
 
 class takeInput(object):
 
@@ -39,10 +41,15 @@ class takeInput(object):
         fromFile = "No text found"
 
         f = open('sendBuffer.txt', 'a')
-        f.write(self.username + ":" + self.string + "\n")
+
+        hs = hashlib.md5()
+        hashMessage = hs.update(self.string).hexdigest()
+        count = random.randint(0, len(hashMessage))
+        uniqueID = hashMessage[count:count+5]
+        f.write(self.username + ": " + self.string + "#" + uniqueID + "\n")
         f.close()
 
-        wholeDoc = open('sendBuffer.txt', 'r')
+        wholeDoc = open('recieveBuffer.txt', 'r')
         fromFile = wholeDoc.read()
         wholeDoc.close()
 
@@ -105,7 +112,7 @@ def continuePolling(filePath, lastMessage):
         
         #print "CONTINUE POLLING Last Message" + lastMessage
         if pollFile(filePath, lastMessage):
-            reader = open('sendBuffer.txt', 'r')
+            reader = open('recieveBuffer.txt', 'r')
             lastMessage = reader.read()
         top.after(2000, top.update())
 
@@ -114,12 +121,22 @@ def getText(requestMessage,parent, t):
     a = takeInput(requestMessage,parent, t)
     return a.getString()
 
+def rr(textFrame):
+    wholeDoc = open('recieveBuffer.txt', 'r')
+    fromFile = wholeDoc.read()
+    wholeDoc.close()
+
+    textFrame.delete(1.0, END)
+    textFrame.insert(INSERT, fromFile)
+    top.after(1000, rr, textFrame)
+
 top = Tk()
 text = Text(top)
-f2 = open('sendBuffer.txt', 'r')
+f2 = open('recieveBuffer.txt', 'r')
 lastMessage = f2.read()
 f2.close()
-#top.after(2000, continuePolling, 'sendBuffer.txt', lastMessage) 
+#top.after(2000, continuePolling, 'sendBuffer.txt', lastMessage)
+#top.after(2000, playOn)
 girl = getText('Message:', top, text)
 #print(girl + " has logged in") 
 #text.insert(INSERT, girl)
@@ -129,5 +146,6 @@ text.pack()
 
 #print "TOP MESSAGE " + lastMessage
 
+rr(text)
 top.mainloop()
 #print(pollFile('sendBuffer.txt', lastMessage))

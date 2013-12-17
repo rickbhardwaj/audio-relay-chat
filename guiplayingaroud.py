@@ -37,7 +37,7 @@ class takeInput(object):
 #global lastMessage
 
 def pollFile(filePath, lastMessage):
-    f2 = open('sendBuffer.txt', 'r')
+    f2 = open('recieveBuffer.txt', 'r')
     readFirst = f2.read()
     #print "Polling File..."
     #print "Last message " + lastMessage
@@ -60,7 +60,7 @@ def continuePolling(filePath, lastMessage):
         
         #print "CONTINUE POLLING Last Message" + lastMessage
         if pollFile(filePath, lastMessage):
-            reader = open('sendBuffer.txt', 'r')
+            reader = open('recieveBuffer.txt', 'r')
             lastMessage = reader.read()
         top.after(2000, top.update())
 
@@ -71,10 +71,10 @@ def getText(requestMessage,parent, t):
 
 top = Tk()
 text = Text(top)
-f2 = open('sendBuffer.txt', 'r')
+f2 = open('recieveBuffer.txt', 'r')
 lastMessage = f2.read()
 f2.close()
-top.after(2000, continuePolling, 'sendBuffer.txt', lastMessage) 
+top.after(2000, continuePolling, 'recieveBuffer.txt', lastMessage) 
 girl = getText('Message:', top, text)
 #print(girl + " has logged in") 
 #text.insert(INSERT, girl)

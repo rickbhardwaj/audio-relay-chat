@@ -192,7 +192,10 @@ def rr(textFrame):
         parsedLine = line.split()
         if parsedLine[0] in a.commands.keys():
             print("REPLICATING...")
-            a.commands[parsedLine[1]](*parsedLine[2:])
+            if parsedLine[0] is 'rep':
+                a.commands[parsedLine[1]](*parsedLine[2:])
+            else:
+                a.commands[parsedLine[0]](*parsedLine[1:])
             print(a.KVStore)
 
             

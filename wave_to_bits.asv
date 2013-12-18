@@ -1,0 +1,24 @@
+function bits = wave_to_bits(wave, f_low, f_high, bits_per_burst, occupying_freq, Fs)
+%wave_to_bits converts a single burst waveform from bits_to_wave back into bits.
+%   the frequency band of the waveform is from f_low to f_high. Erasured
+%   bits are decoded as -1.
+
+bits = zeros(1,bits_per_burst);
+
+tones = linspace(f_low,f_high,bits_per_burst*2);
+
+occupying_freq_strength = get_frequency_strength(occupying_freq,wave,Fs,Chat_parameters.window_size);
+
+for j = 1:bits_per_burst
+    off_strength = get_frequency_strength(tones(mod((j-1)*2, 2*bits_per_burst)+1),wave,Fs,Chat_parameters.window_size);
+    on_strength = get_frequency_strength(tones(mod((j-1)*2+1, 2*bits_per_burst)+1),wave,Fs,Chat_parameters.window_size);
+    if(abs
+    end
+    message_wave((i-1)*length(t)+1:i*length(t)) = signal;
+end
+message_wave = message_wave/max(abs(message_wave));
+
+
+waveform = message_wave;
+end
+

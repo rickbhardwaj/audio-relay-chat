@@ -1,0 +1,1 @@
+system('matlab -nosplash -nodesktop -nojvm -nodisplay -minimize -r "t = 0:1/44000:1; y = sin(440*2*pi*t); sound(y,44000); pause(1); exit;" &');

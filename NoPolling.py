@@ -5,9 +5,7 @@ import random
 import hashlib
 
 class takeInput(object):
-
-    def __init__(self,requestMessage,parent, text):
-
+    def __init__(self,requestMessage,parent, text):        
         s = ttk.Style()
         s.theme_use('clam')
 
@@ -37,16 +35,50 @@ class takeInput(object):
 
     def gettext(self):
         self.string = self.e.get()
+
+        def put(key, value):
+            KVStore[key] = value
+            f = open('sendBuffer.txt', 'a')
+            f.write(self.string)
+            f.close()
+            print(KVStore)
+
+        def get(key):
+            f = open('sendBuffer.txt', 'a')
+            f.write(self.string)
+            f.close()
+            return KVStore[key]
+
+        def replicate(*args):
+            args[0](*args[1:])
+
+        def sanity():
+            print("sanity")
+    
+        #Checking is valid command
+
+        commands = {'\put': put, '\get': get, '\rep': replicate, '\san': sanity}
+        KVStore = {'zero': 0}   
+
+        parsedString = self.string.split()
+        
+        if parsedString[0] in commands.keys():
+            commands[parsedString[0]](*parsedString[1:])
+        
+
+        #Sending to buffer
         self.textFrame.insert(INSERT, self.string)
         fromFile = "No text found"
 
         f = open('sendBuffer.txt', 'a')
 
         hs = hashlib.md5()
-        hashMessage = hs.update(self.string).hexdigest()
+        hs.update(self.string)
+        hashMessage = hs.hexdigest()
         count = random.randint(0, len(hashMessage))
         uniqueID = hashMessage[count:count+5]
         f.write(self.username + ": " + self.string + "#" + uniqueID + "\n")
+        
         f.close()
 
         wholeDoc = open('recieveBuffer.txt', 'r')
@@ -56,7 +88,6 @@ class takeInput(object):
         self.textFrame.delete(1.0, END)
         self.textFrame.insert(INSERT, fromFile)
         #self.frame.destroy()
-        print self.string
 
     def getString(self):
         return self.string
@@ -122,6 +153,10 @@ def getText(requestMessage,parent, t):
     return a.getString()
 
 def rr(textFrame):
+    commandDoc = open('commandBuffer.txt', 'r+')
+    lines = commandDoc.readlines()
+    commandDoc.close()
+    
     wholeDoc = open('recieveBuffer.txt', 'r')
     fromFile = wholeDoc.read()
     wholeDoc.close()

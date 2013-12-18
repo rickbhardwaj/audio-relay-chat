@@ -1,17 +1,8 @@
-I want to send this1
-
-I want to send this2
-
-I want to send this3
-
-I want to send this4
-
-I want to send this4
-
-I want to send this4
-
-/req /put two 2
-/req /put two 2
+Rick has logged in
+Rick: Hello?
+/rep /put three 3
+Anonymous: \put two 2
 /rep /put two 2
-/rep /put two 2
-/rep /put two 2
+/rep /put one 1
+/rep /put three 3
+FAILURE

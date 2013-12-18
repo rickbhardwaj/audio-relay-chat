@@ -20,7 +20,7 @@ class takeInput(object):
         def put(key, value):
             self.KVStore[key] = value
             f = open('sendBuffer.txt', 'a')
-            f.write(self.string + '\n')
+            f.write('/rep ' + self.string + '\n')
             f.close()
 
             f = open('KVLog.txt', 'a')
@@ -29,11 +29,26 @@ class takeInput(object):
             print(self.KVStore)
 
         def get(key):
-            print(self.KVStore[key])
-            return self.KVStore[key]
+            print("Transaction for " + str(key) + " returned " + str(self.KVStore[key]) + "\n")
+            f = open('sendBuffer.txt', 'a')
+            f.write("Transaction for " + str(key) + " returned " + str(self.KVStore[key]))
+            f.close()
+            #return self.KVStore[key]
 
-        def replicate(*args):
-            args[0](*args[1:])
+        #Parameter used to be *args
+        def replicate(a):
+            #args[0](*args[1:])
+            #print("GETTING CALLED?")
+            #print(a)
+            self.KVStore[a[1]] = a[2]
+
+            f = open('KVLog.txt', 'a')
+            f.write(' '.join(a) + '\n')
+            f.close()
+            
+            #print("DID I SKIP THIS ")
+            #+ a[1:])
+            #print(' '.join(a))
             #f = open('KVLog.txt', 'a')
             #f.write(self.string + '\n')
             #f.close()
@@ -46,6 +61,7 @@ class takeInput(object):
             f.close()
 
         def recovery():
+            print("Recovering...")
             o1 = open('sendBuffer.txt', 'a')
             o2 = open('KVLog.txt', 'r')
             o1.write(o2.read())
@@ -145,7 +161,7 @@ class takeInput(object):
         if data:
             self.username = data
             logger = open('sendBuffer.txt', 'a')
-            logger.write(self.username + "has logged in\n")
+            logger.write(self.username + " has logged in\n")
             self.top.destroy()
 
 
@@ -190,15 +206,22 @@ def rr(textFrame):
     for l in range(0, len(lines)):
         line = lines[l]
         parsedLine = line.split()
+        if parsedLine[0] == 'FAILURE':
+            print("Recovering from failure")
+            #print(a.commands['/recover'])
+            a.commands['/recover']()
         if parsedLine[0] in a.commands.keys():
-            print("REPLICATING...")
-            if parsedLine[0] is 'rep':
-                a.commands[parsedLine[1]](*parsedLine[2:])
-            else:
-                a.commands[parsedLine[0]](*parsedLine[1:])
+            print("PARSED LINE: " + parsedLine[0])
+            if parsedLine[0] == '/rep':
+                print("REPLICATING..." + str(parsedLine))
+                a.commands[parsedLine[0]](parsedLine[1:])
+            
+            #else:
+                #a.commands[parsedLine[0]](*parsedLine[1:])
             print(a.KVStore)
 
-            
+
+     #Put back in when in production       
     open('commandBuffer.txt', 'w').close()
     commandDoc.close()
 

@@ -16,6 +16,7 @@ class takeInput(object):
         self.textFrame = text
         self.username = "Anonymous"
 
+
         def put(key, value):
             self.KVStore[key] = value
             f = open('sendBuffer.txt', 'a')
@@ -28,22 +29,36 @@ class takeInput(object):
             print(self.KVStore)
 
         def get(key):
-            f = open('sendBuffer.txt', 'a')
-            f.write(self.string)
-            f.close()
+            print(self.KVStore[key])
             return self.KVStore[key]
 
         def replicate(*args):
             args[0](*args[1:])
-            f = open('KVLog.txt', 'a')
-            f.write(self.string + '\n')
+            #f = open('KVLog.txt', 'a')
+            #f.write(self.string + '\n')
+            #f.close()
+
+        def failure():
+            self.KVStore.clear()
+            print("FAILED")
+            f = open('sendBuffer.txt', 'a')
+            f.write("FAILURE")
             f.close()
 
+        def recovery():
+            o1 = open('sendBuffer.txt', 'a')
+            o2 = open('KVLog.txt', 'r')
+            o1.write(o2.read())
+            o1.close()
+            o2.close()
+                
+        
         def sanity():
             print("sanity")
-            
-        self.commands = {'/put': put, '/get': get, '/rep': replicate, '/san': sanity}
+
+        self.commands = {'/put': put, '/get': get, '/rep': replicate, '/san': sanity, '/fail': failure, '/recover': recovery}
         self.KVStore = {'zero': 0}
+        
 
         button0 = ttk.Button(self.frame, text='Set user', command=self.msg_box)
         
@@ -175,8 +190,12 @@ def rr(textFrame):
     for l in range(0, len(lines)):
         line = lines[l]
         parsedLine = line.split()
-        if parsedLine[0].equals('/rep'):
-            a.commands[parsedLine[0]]
+        if parsedLine[0] in a.commands.keys():
+            print("REPLICATING...")
+            a.commands[parsedLine[1]](*parsedLine[2:])
+            print(a.KVStore)
+
+            
     open('commandBuffer.txt', 'w').close()
     commandDoc.close()
 

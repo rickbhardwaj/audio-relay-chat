@@ -14,7 +14,36 @@ class takeInput(object):
         self.frame.pack()        
         self.acceptInput(requestMessage)
         self.textFrame = text
-        self.username = "Mr. Not Set"
+        self.username = "Anonymous"
+
+        def put(key, value):
+            self.KVStore[key] = value
+            f = open('sendBuffer.txt', 'a')
+            f.write(self.string + '\n')
+            f.close()
+
+            f = open('KVLog.txt', 'a')
+            f.write(self.string + '\n')
+            f.close()
+            print(self.KVStore)
+
+        def get(key):
+            f = open('sendBuffer.txt', 'a')
+            f.write(self.string)
+            f.close()
+            return self.KVStore[key]
+
+        def replicate(*args):
+            args[0](*args[1:])
+            f = open('KVLog.txt', 'a')
+            f.write(self.string + '\n')
+            f.close()
+
+        def sanity():
+            print("sanity")
+            
+        self.commands = {'/put': put, '/get': get, '/rep': replicate, '/san': sanity}
+        self.KVStore = {'zero': 0}
 
         button0 = ttk.Button(self.frame, text='Set user', command=self.msg_box)
         
@@ -36,34 +65,19 @@ class takeInput(object):
     def gettext(self):
         self.string = self.e.get()
 
-        def put(key, value):
-            KVStore[key] = value
-            f = open('sendBuffer.txt', 'a')
-            f.write(self.string)
-            f.close()
-            print(KVStore)
+        
 
-        def get(key):
-            f = open('sendBuffer.txt', 'a')
-            f.write(self.string)
-            f.close()
-            return KVStore[key]
-
-        def replicate(*args):
-            args[0](*args[1:])
-
-        def sanity():
-            print("sanity")
+      
     
         #Checking is valid command
 
-        commands = {'\put': put, '\get': get, '\rep': replicate, '\san': sanity}
-        KVStore = {'zero': 0}   
+        #self.commands = {'\put': put, '\get': get, '\rep': replicate, '\san': sanity}
+        #self.KVStore = {'zero': 0}   
 
         parsedString = self.string.split()
         
-        if parsedString[0] in commands.keys():
-            commands[parsedString[0]](*parsedString[1:])
+        if parsedString[0] in self.commands.keys():
+            self.commands[parsedString[0]](*parsedString[1:])
         
 
         #Sending to buffer
@@ -72,12 +86,15 @@ class takeInput(object):
 
         f = open('sendBuffer.txt', 'a')
 
+        #Unique MD5 identifier
         hs = hashlib.md5()
         hs.update(self.string)
         hashMessage = hs.hexdigest()
         count = random.randint(0, len(hashMessage))
         uniqueID = hashMessage[count:count+5]
-        f.write(self.username + ": " + self.string + "#" + uniqueID + "\n")
+
+        if parsedString[0] not in self.commands.keys():
+            f.write(self.username + ": " + self.string + "\n")
         
         f.close()
 
@@ -155,7 +172,15 @@ def getText(requestMessage,parent, t):
 def rr(textFrame):
     commandDoc = open('commandBuffer.txt', 'r+')
     lines = commandDoc.readlines()
+    for l in range(0, len(lines)):
+        line = lines[l]
+        parsedLine = line.split()
+        if parsedLine[0].equals('/rep'):
+            a.commands[parsedLine[0]]
+    open('commandBuffer.txt', 'w').close()
     commandDoc.close()
+
+    print a.KVStore.keys()
     
     wholeDoc = open('recieveBuffer.txt', 'r')
     fromFile = wholeDoc.read()
